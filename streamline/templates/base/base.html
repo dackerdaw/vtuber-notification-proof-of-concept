@@ -31,7 +31,9 @@
       }
     </style>
     <!-- Custom styles for this template -->
+    {% block customStyle %}
     <link href="{% static '/css/carousel.css' %}" rel="stylesheet">
+    {% endblock %}
   </head>
   <body>
     <header>
@@ -63,12 +65,12 @@
   </nav>
 </header>
 
-{% block content %}
 <main role="main">
   <!-- Marketing messaging and featurettes
   ================================================== -->
   <!-- Wrap the rest of the page in another container to center all the content. -->
 
+{% block content %}
   <div class="container marketing" style="margin-top: 70px;">
 
     <!-- Three columns of text below the carousel -->
@@ -97,6 +99,7 @@
 
   </div><!-- /.container -->
 
+{% endblock %}
 
   <!-- FOOTER -->
   <footer class="container">
@@ -104,7 +107,7 @@
     <p>&copy; 2017-2020 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
   </footer>
 </main>
-{% endblock %}
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
       <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="{% static '/js/bootstrap.bundle.min.js' %}"></script>
