@@ -1,8 +1,11 @@
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import render
 
 from display.models.channel import Channel
-from display.forms.find_channel import findChannel
+from display.forms.find_channel_form import findChannelForm
+
+from .youtube_xml_feed import fetchChannelXML
 
 def index(request):
 
@@ -12,20 +15,26 @@ def index(request):
     return render(request, 'base/base.html', context=data)
 
 def channelsIndex(request):
-    channels = Channel.objects.all()
 
     if request.method == 'POST':
-        form = findChannel(request.POST)
+        form = findChannelForm(request.POST)
         if form.is_valid():
             channelId = form.cleaned_data['channelId']
+            # check if channel exists in db, otherwise fetch with youtube xml feed
             try:
                 selectedChannel = Channel.objects.get(pk=channelId)
                 print("channel found in db")
+                # display in another page
+                return HttpResponseRedirect(reverse('channel-detail', args=[channelId]))
             except:
                 print("channel not found in db")
-            return HttpResponseRedirect('/thanks/')
+                # check if its a valid youtube channel, and asks if user want to save it and crawl it
+                return HttpResponseRedirect(reverse('confirm-save-channel', args=[channelId]))
+
     else:
-        form = findChannel()
+        form = findChannelForm()
+    
+    channels = Channel.objects.all()
 
     data = {
         'form':form,
@@ -33,3 +42,12 @@ def channelsIndex(request):
     }
 
     return render(request, 'channel/index.html', context=data)
+
+def channelDetail(request, channelId):
+    selectedChannel = Channel.objects.get(pk=channelId)
+
+    data = {
+        'selectedChannel':selectedChannel,
+    }
+
+    return render(request, 'channel/detail.html', context=data)

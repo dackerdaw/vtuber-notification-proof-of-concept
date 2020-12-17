@@ -1,0 +1,70 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+<title>
+    Save Confirmation
+</title>
+{% endblock %}
+
+{% block customStyle %}
+<style>
+    .jumbotron {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+@media (min-width: 768px) {
+  .jumbotron {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+.jumbotron p:last-child {
+  margin-bottom: 0;
+}
+
+.jumbotron h1 {
+  font-weight: 300;
+}
+
+.jumbotron .container {
+  max-width: 40rem;
+}
+
+footer {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+footer p {
+  margin-bottom: .25rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="jumbotron text-center">
+    <div class="container">
+      <h1>{{ fetchedChannel.1 }}</h1>
+      <p class="lead text-muted">This channel is not registered in our database. However, it is a valid YouTube channel and you can add it into the watchlist.</p>
+      <p>
+        <form  action="" method="post">
+            {% csrf_token %}
+            <input class="btn btn-primary my-2" type="submit" value="Save to database"/>
+            <a href="https://www.youtube.com/channel/{{ fetchedChannel.0 }}" class="btn btn-secondary my-2">Go to channel</a>
+        </form>
+      </p>
+    </div>
+  </section>
+
+<div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row">
+        
+      </div>
+    </div>
+  </div>
+{% endblock %}
