@@ -1,2 +1,7 @@
 streamline/db.sqlite3
 streamline/streamline/__pycache__/*
+streamline/display/__pycache__/*
+streamline/display/controllers/__pycache__/*
+streamline/display/forms/__pycache__/*
+streamline/display/migrations/*
+streamline/display/models/__pycache__/*
