@@ -7,5 +7,5 @@ And from now on, that channel will be added to the watchlist. This watchlist wil
 
 for this proof of concept, the watchlist will have to be executed manually from the home page for all channels or from the page of each channel. I have yet implemented a function that changes the state of an upcoming video to live when it's live or from a live video to an archived one when it's done.
 
-REQUIREMENTS:
+# Requirements
 Available in requirements.txt. Alternatively, just run 'pip install -r requirements.txt' inside your virtualenv.
