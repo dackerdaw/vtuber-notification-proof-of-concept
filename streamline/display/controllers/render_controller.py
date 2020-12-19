@@ -19,7 +19,7 @@ def index(request):
     # still sceptical about this one, if its gte, does it also include 
     # every video in the future? of course i filtered with liveBroadcastContent='none'.
     # but still unsure nonetheless
-    how_many_hours = 6
+    how_many_hours = 24
     recentlyEndedStreams = Video.objects.filter(liveBroadcastContent='none', publishedAt__gte=datetime.now()-timedelta(hours=how_many_hours))
 
     data = {
@@ -39,11 +39,11 @@ def channelsIndex(request):
             # check if channel exists in db, otherwise fetch with youtube xml feed
             try:
                 selectedChannel = Channel.objects.get(pk=channelId)
-                print("channel found in db")
+                # print("channel found in db")
                 # display in another page
                 return HttpResponseRedirect(reverse('channel-detail', args=[channelId]))
             except:
-                print("channel not found in db")
+                # print("channel not found in db")
                 # check if its a valid youtube channel, and asks if user want to save it and crawl it
                 return HttpResponseRedirect(reverse('confirm-save-channel', args=[channelId]))
 

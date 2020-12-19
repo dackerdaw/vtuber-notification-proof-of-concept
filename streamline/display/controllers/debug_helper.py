@@ -2,6 +2,7 @@ import time
 
 API_CALLS_MADE = 0
 
+# Class to color the output of the terminal, untested on Windows or Mac.
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'

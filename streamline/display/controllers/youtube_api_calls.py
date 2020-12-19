@@ -37,15 +37,15 @@ def fetchPlaylistItemsAPI(playlistId):
 
         try:
             nextPageToken = api_response['nextPageToken']
-            print(nextPageToken)
+            # print(nextPageToken)
         except:
-            print("This is the last page")
+            # print("This is the last page")
             nextPageToken=None
         items.extend(api_response['items'])
 
     return items
 
-def fetchVideosAPI(videoId): # 1 unit per call
+def fetchVideosAPI(videoId): # 1 unit per call, the maximum num of videoId in one call is 50 (separated by comma)
 
     api_request = youtube.videos().list(
         part="snippet,liveStreamingDetails",
