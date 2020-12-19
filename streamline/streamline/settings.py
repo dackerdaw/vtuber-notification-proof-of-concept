@@ -84,6 +84,19 @@ DATABASES = {
     }
 }
 
+# #  postgres is slightly faster than sqlite3, but the overhead from
+# # fetching the raw xml still persists
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': '',
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432'
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

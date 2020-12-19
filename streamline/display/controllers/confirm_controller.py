@@ -62,12 +62,10 @@ def confirmSaveChannel(request, channelId):
 
     return render(request, 'confirm/confirm_save_channel.html', context=data)
 
-# unoptimized for updateRecentFeedsAll(), try to make it so you can 
-# make fetchVideosAPI() calls with videoIdString across multiple channel
 def updateRecentFeedsHelper(channelId):
     uncrawledVideoIds = fetchRecentFeedsXML(channelId)
     if uncrawledVideoIds:
-        # call youtube api for videos with the following videoId (multiple video ids are ok too)
+        # call youtube api for videos with the following videoId (multiple video ids are ok too up to 50 ids)
         videoIdString = ",".join(uncrawledVideoIds)
         items = fetchVideosAPI(videoIdString)
 
@@ -130,23 +128,6 @@ def updateRecentFeedsChannel(request, channelId):
     display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
     return HttpResponseRedirect(reverse('channel-detail', args=[channelId]))
 
-# @display.controllers.debug_helper.st_time
-# def updateRecentFeedsAll(request):
-#     channels = Channel.objects.all()
-#     newlyCrawledVideos = 0
-
-#     for channel in channels:
-#         newlyCrawledVideos += updateRecentFeedsHelper(channel.channelId)
-
-#     if newlyCrawledVideos > 0:
-#         messages.info(request, 'All channel crawled. %d new video(s) found. %d YouTube API quota spent' % (newlyCrawledVideos, display.controllers.debug_helper.API_CALLS_MADE))
-#         display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
-#         # don't forget to implement the message in the template
-#     else:
-#         messages.info(request, 'No new video found.')
-#         # don't forget to implement the message in the template
-#     return HttpResponseRedirect(reverse('index'))
-
 # Yield successive n-sized 
 # chunks from l. 
 def divide_chunks(l, n): 
@@ -177,7 +158,7 @@ def updateRecentFeedsAll(request):
 
             for item in items:
                 currVideoId = item['id']
-                currChannelId = item['snippet']['channelId'] # potentially cumbersome, change it into str instead of Channel object or smth
+                currChannelId = item['snippet']['channelId']
                 currTitle = item['snippet']['title']
                 currThumbnail = item['snippet']['thumbnails']['medium']['url']
                 currPublishedAt = item['snippet']['publishedAt']
