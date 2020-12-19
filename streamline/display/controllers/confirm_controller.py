@@ -8,7 +8,9 @@ from display.models.video import Video
 
 from .youtube_xml_feed import fetchChannelXML, fetchRecentFeedsXML
 from .youtube_api_calls import fetchChannelAPI, fetchPlaylistItemsAPI, fetchVideosAPI
+import display.controllers.debug_helper
 
+@display.controllers.debug_helper.st_time
 def confirmSaveChannel(request, channelId):
     if request.method == 'POST':
         fetchedChannel = fetchChannelAPI(channelId)
@@ -33,10 +35,13 @@ def confirmSaveChannel(request, channelId):
                     print("Something went wrong idk")
                     return HttpResponseRedirect(reverse('channel-index'))
 
+            # don't forget to implement the message in the template
+            messages.info(request, 'Channel saved. %d archived video(s) found. %d YouTube API quota spent' % (len(fetchedVideos), display.controllers.debug_helper.API_CALLS_MADE))
+            display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
             return HttpResponseRedirect(reverse('channel-detail', args=[channelId]))
 
-        except:
-            print("An exception occurred")
+        except Exception as e:
+            print(e)
             # implement the error msg!!!! but i dont even know what kind of error this'll produce, if any.
             return HttpResponseRedirect(reverse('channel-index'))
 
@@ -56,6 +61,8 @@ def confirmSaveChannel(request, channelId):
 
     return render(request, 'confirm/confirm_save_channel.html', context=data)
 
+# unoptimized for updateRecentFeedsAll(), try to make it so you can 
+# make fetchVideosAPI() calls with videoIdString across multiple channel
 def updateRecentFeedsHelper(channelId):
     uncrawledVideoIds = fetchRecentFeedsXML(channelId)
     if uncrawledVideoIds:
@@ -110,16 +117,19 @@ def updateRecentFeedsHelper(channelId):
     else:
         return 0
 
+@display.controllers.debug_helper.st_time
 def updateRecentFeedsChannel(request, channelId):
     newlyCrawledVideos = updateRecentFeedsHelper(channelId)
     if newlyCrawledVideos > 0:
-        messages.info(request, '%d new video(s) found.' % newlyCrawledVideos)
+        messages.info(request, 'Channel crawled. %d new video(s) found. %d YouTube API quota spent' % (newlyCrawledVideos, display.controllers.debug_helper.API_CALLS_MADE))
+        display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
         # don't forget to implement the message in the template
     else:
         messages.info(request, 'No new video found.')
         # don't forget to implement the message in the template
     return HttpResponseRedirect(reverse('channel-detail', args=[channelId]))
 
+@display.controllers.debug_helper.st_time
 def updateRecentFeedsAll(request):
     channels = Channel.objects.all()
     newlyCrawledVideos = 0
@@ -128,7 +138,8 @@ def updateRecentFeedsAll(request):
         newlyCrawledVideos += updateRecentFeedsHelper(channel.channelId)
 
     if newlyCrawledVideos > 0:
-        messages.info(request, '%d new video(s) found.' % newlyCrawledVideos)
+        messages.info(request, 'All channel crawled. %d new video(s) found. %d YouTube API quota spent' % (newlyCrawledVideos, display.controllers.debug_helper.API_CALLS_MADE))
+        display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
         # don't forget to implement the message in the template
     else:
         messages.info(request, 'No new video found.')

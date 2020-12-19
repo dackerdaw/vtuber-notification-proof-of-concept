@@ -1,16 +1,19 @@
 from googleapiclient.discovery import build
 
+import display.controllers.debug_helper
+
 # don't forget to hide this key post-deployment
 API_KEY = 'AIzaSyAL8iJZSXRd6iu-yhiMeu9osvMZX1XKjKE'
 
 youtube = build('youtube', 'v3', developerKey=API_KEY)
 
-def fetchChannelAPI(channelId):
+def fetchChannelAPI(channelId): # 1 unit per call
     api_request = youtube.channels().list(
         part="snippet,contentDetails",
         id=channelId
     )
     api_response = api_request.execute()
+    display.controllers.debug_helper.API_CALLS_MADE += 1
 
     newId = api_response['items'][0]['id']
     newName = api_response['items'][0]['snippet']['title']
@@ -23,13 +26,14 @@ def fetchPlaylistItemsAPI(playlistId):
     items = []
     nextPageToken=""
     while (nextPageToken != None):
-        api_request = youtube.playlistItems().list(
+        api_request = youtube.playlistItems().list( # 1 unit per call
             part="snippet",
             pageToken=nextPageToken,
             maxResults=50,
             playlistId=playlistId,
         )
         api_response = api_request.execute()
+        display.controllers.debug_helper.API_CALLS_MADE += 1
 
         try:
             nextPageToken = api_response['nextPageToken']
@@ -41,13 +45,14 @@ def fetchPlaylistItemsAPI(playlistId):
 
     return items
 
-def fetchVideosAPI(videoId):
+def fetchVideosAPI(videoId): # 1 unit per call
 
     api_request = youtube.videos().list(
         part="snippet,liveStreamingDetails",
         id=videoId
     )
     api_response = api_request.execute()
+    display.controllers.debug_helper.API_CALLS_MADE += 1
     items = api_response['items']
     return items
 
