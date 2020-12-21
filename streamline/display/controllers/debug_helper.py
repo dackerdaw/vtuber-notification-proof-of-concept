@@ -1,6 +1,7 @@
 import time
 
 API_CALLS_MADE = 0
+API_CALLS_MADE_DAILY = 0
 
 # Class to color the output of the terminal, untested on Windows or Mac.
 class bcolors:

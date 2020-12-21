@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from display.models.channel import Channel
 from display.models.video import Video
 from display.forms.find_channel_form import findChannelForm
+import display.controllers.debug_helper
 
 from .youtube_xml_feed import fetchChannelXML
 
@@ -19,13 +20,14 @@ def index(request):
     # still sceptical about this one, if its gte, does it also include 
     # every video in the future? of course i filtered with liveBroadcastContent='none'.
     # but still unsure nonetheless
-    how_many_hours = 7
+    how_many_hours = 6
     recentlyEndedStreams = Video.objects.filter(liveBroadcastContent='none', publishedAt__gte=datetime.now()-timedelta(hours=how_many_hours))
 
     data = {
         'upcomingVideos':upcomingVideos,
         'liveVideos':liveVideos,
         'recentlyEndedStreams':recentlyEndedStreams,
+        'api_points':display.controllers.debug_helper.API_CALLS_MADE_DAILY
     }
 
     return render(request, 'base/base.html', context=data)

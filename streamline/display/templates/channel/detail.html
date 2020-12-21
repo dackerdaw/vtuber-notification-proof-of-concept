@@ -54,6 +54,9 @@ margin-bottom: .25rem;
       <a href="{% url 'update-recent-feeds-channel' selectedChannel.channelId %}" class="btn btn-primary my-2">Update feeds</a>
       <a href="https://www.youtube.com/channel/{{ selectedChannel.channelId }}" class="btn btn-secondary my-2">Go to channel</a>
     </p>
+    <p>
+      <a href="{% url 'update-watchlist-channel' selectedChannel.channelId %}" class="btn btn-primary my-2">Update watchlist</a>
+    </p>
   </div>
 </section>
 

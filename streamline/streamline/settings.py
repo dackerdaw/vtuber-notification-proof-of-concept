@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -84,14 +85,14 @@ DATABASES = {
     }
 }
 
-# #  postgres is slightly faster than sqlite3, but the overhead from
-# # fetching the raw xml still persists
+#  postgres is slightly faster than sqlite3, but the overhead from
+# fetching the raw xml still persists
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': '',
-#         'USER': '',
-#         'PASSWORD': '',
+#         'NAME': 'proofofconcept',
+#         'USER': 'django',
+#         'PASSWORD': 'django',
 #         'HOST': '127.0.0.1',
 #         'PORT': '5432'
 #     }
@@ -139,3 +140,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+
+# the async views only work with this setting, what are the consequences?
+# no idea, should i be worried? perhaps, do i know any other solution?
+# too bad
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
