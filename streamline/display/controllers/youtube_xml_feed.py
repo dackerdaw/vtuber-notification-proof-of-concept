@@ -1,6 +1,7 @@
 from aiohttp import ClientSession, TCPConnector
 import asyncio
 import pypeln as pl
+from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 from asgiref.sync import sync_to_async
 
@@ -10,7 +11,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from display.models.channel import Channel
 from display.models.video import Video
 
-async def fetchXML():
+def fetchChannelXML(channelId):
+
+    url = 'https://www.youtube.com/feeds/videos.xml?channel_id=%s' % channelId
+    var_url = urlopen(url)
+    tree = ET.parse(var_url)
+    root = tree.getroot()
+
+    currChannelId = root[2].text
+    currChannelName = root[3].text
+
+    return (currChannelId, currChannelName)
+
+async def fetchXMLAsync():
 
     async with ClientSession(connector=TCPConnector(limit=0)) as session:
 
@@ -39,7 +52,10 @@ async def fetchXML():
             for channel in channels
         ]
 
-        stage = await pl.task.map(fetch, urls, workers=5) # 5 seems to be the safest
+        stage = await pl.task.map(fetch, urls, workers=10) # 5 workers seems to be the safest
         data = list(stage)
 
         return data
+
+def fetchXML():
+    return asyncio.run(fetchXMLAsync())

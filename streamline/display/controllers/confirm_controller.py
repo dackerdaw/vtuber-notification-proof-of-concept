@@ -10,7 +10,7 @@ from django.db.models import Q
 from display.models.channel import Channel
 from display.models.video import Video
 
-from .youtube_xml_feed import fetchXML
+from .youtube_xml_feed import fetchChannelXML, fetchXML
 from .youtube_api_calls import fetchChannelAPI, fetchPlaylistItemsAPI, fetchVideosAPI
 import display.controllers.debug_helper
 
@@ -118,7 +118,7 @@ def divide_chunks(l, n):
 def updateRecentFeeds(request):
     channels = Channel.objects.all()
 
-    fetched = asyncio.run(fetchXML())
+    fetched = fetchXML()
     newlyCrawledVideoIdList = []
     for item in fetched:
         newlyCrawledVideoIdList.extend(item)
