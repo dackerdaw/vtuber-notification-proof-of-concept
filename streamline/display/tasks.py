@@ -20,7 +20,7 @@ def send_email_task():
     send_mail(
         'Celery task worked!',
         'This is proof that the task worked!',
-        'ibrahim.qardhawi@student.president.ac.id',
+        'sender@mail.co.kr',
         ['haxec75817@nenekbet.com']
     )
 
