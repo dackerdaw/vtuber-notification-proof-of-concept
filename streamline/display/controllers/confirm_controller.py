@@ -12,6 +12,7 @@ from display.models.video import Video
 
 from .youtube_xml_feed import fetchChannelXML, fetchXML
 from .youtube_api_calls import fetchChannelAPI, fetchPlaylistItemsAPI, fetchVideosAPI
+from .helper import refreshFeeds, divide_chunks
 import display.controllers.debug_helper
 
 @display.controllers.debug_helper.st_time
@@ -106,75 +107,12 @@ def confirmSaveChannel(request, channelId):
 
     return render(request, 'confirm/confirm_save_channel.html', context=data)
 
-# Yield successive n-sized chunks from l. 
-def divide_chunks(l, n): 
-      
-    # looping till length l 
-    for i in range(0, len(l), n):  
-        yield l[i:i + n] 
-
 # look for new videos of all channel from the XML feed
 @display.controllers.debug_helper.st_time
 def updateRecentFeeds(request):
-
-    fetched = fetchXML()
-    newlyCrawledVideoIdList = []
-    for item in fetched:
-        newlyCrawledVideoIdList.extend(item)
-    
-    # YouTube API videos.list() allows up to 50 videoIds per call.
-    # since we crawl all channels periodically, it shouldn't exceeds 50.
-    # but for testing purposes, we might crawl all channels that has never been 
-    # crawled which potentially yields more than 50 uncrawled videos
-    numOfVids = len(newlyCrawledVideoIdList)
-
+    channels = Channel.objects.all()
+    numOfVids = refreshFeeds()
     if numOfVids > 0:
-        dividedChunks = list(divide_chunks(newlyCrawledVideoIdList, 50))
-        for chunk in dividedChunks:
-            videoIdString = ",".join(chunk)
-            items = fetchVideosAPI(videoIdString)
-
-            for item in items:
-                currVideoId = item['id']
-                currChannelId = item['snippet']['channelId']
-                currTitle = item['snippet']['title']
-                currThumbnail = item['snippet']['thumbnails']['medium']['url']
-                currPublishedAt = item['snippet']['publishedAt']
-                currLiveBroadcastContent = item['snippet']['liveBroadcastContent']
-                try:
-                    currScheduledStartTime = item['liveStreamingDetails']['scheduledStartTime']
-                except:
-                    currScheduledStartTime = None
-
-                try:
-                    currActualStartTime = item['liveStreamingDetails']['actualStartTime']
-                except:
-                    currActualStartTime = None
-
-                try:
-                    currActualEndTime = item['liveStreamingDetails']['actualEndTime']
-                except:
-                    currActualEndTime = None
-
-                newVideo = Video(
-                    videoId=currVideoId,
-                    # channelId=currChannelId,
-                    title=currTitle,
-                    thumbnail=currThumbnail,
-                    publishedAt=currPublishedAt,
-                    liveBroadcastContent=currLiveBroadcastContent,
-                    scheduledStartTime=currScheduledStartTime,
-                    actualStartTime=currActualStartTime,
-                    actualEndTime=currActualEndTime,
-                )
-                newVideo.channelId_id = currChannelId
-
-                try:
-                    newVideo.save()
-                except Exception as e:
-                    print(e)
-                    return HttpResponseRedirect(reverse('channel-index'))
-                
         messages.info(request, 'All %d channel(s) crawled. %d new video(s) found. %d YouTube API quota spent' % (len(channels), numOfVids, display.controllers.debug_helper.API_CALLS_MADE))
         # don't forget to implement the message in the template
     else:
@@ -240,7 +178,7 @@ def updateWatchlist(request):
         messages.info(request, 'Watchlish updated. %d video(s) updated. %d YouTube API quota spent' % (len(watchlistedVideoIdList), display.controllers.debug_helper.API_CALLS_MADE))
         # don't forget to implement the message in the template
     else:
-        messages.info(request, 'No new video found.')
+        messages.info(request, 'No changes were made.')
         # don't forget to implement the message in the template
     display.controllers.debug_helper.API_CALLS_MADE_DAILY += display.controllers.debug_helper.API_CALLS_MADE
     display.controllers.debug_helper.API_CALLS_MADE = 0 # set it back to zero
