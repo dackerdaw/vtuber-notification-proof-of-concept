@@ -160,8 +160,12 @@ CELERY_TIMEZONE = 'Asia/Jakarta'
 # idk this seems off, i didn't read the docs im sorry
 CELERY_BEAT_SCHEDULE = {
     'refresh-feeds-every-15-mins': { 
+        'task': 'display.tasks.refreshFeedsBackground', 
+        'schedule': 900.0,
+    },
+    'refresh-watchlist-every-5-mins': { 
         'task': 'display.tasks.refreshWatchlistBackground', 
-        'schedule': 60.0,
+        'schedule': 300.0,
     }
 }
 

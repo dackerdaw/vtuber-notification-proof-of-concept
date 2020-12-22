@@ -7,11 +7,13 @@ from .controllers.helper import refreshFeeds, refreshWatchlist
 
 @shared_task 
 def refreshFeedsBackground():
-    print('Here I am')
+    result = refreshFeeds()
+    print('%d new video(s) crawled' % result)
 
 @shared_task 
 def refreshWatchlistBackground():
-    refreshWatchlist()
+    result = refreshWatchlist()
+    print('%d video(s) refreshed' % result)
 
 @shared_task
 def send_email_task():
