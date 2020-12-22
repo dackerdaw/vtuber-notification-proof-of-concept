@@ -107,8 +107,8 @@ margin-bottom: .25rem;
     <h1 class="display-3">Hello, world!</h1>
     <p>The amount of YouTube API quota point(s) spent in this session: {{ api_points }}.</p>
     <p>
-      <a class="btn btn-primary btn-lg" href="{% url 'update-recent-feeds-all' %}" role="button">Update all feeds &raquo;</a>
-      <a class="btn btn-secondary btn-lg" href="{% url 'update-watchlist-all' %}" role="button">Update all watchlist &raquo;</a>
+      <a class="btn btn-primary btn-lg" href="{% url 'update-recent-feeds' %}" role="button">Update all feeds &raquo;</a>
+      <a class="btn btn-secondary btn-lg" href="{% url 'update-watchlist' %}" role="button">Update all watchlist &raquo;</a>
     </p>
     {% if messages %}
     <div class="py-5 text-center">
