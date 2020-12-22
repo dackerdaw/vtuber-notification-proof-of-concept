@@ -157,17 +157,11 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Jakarta'
-# We're going to have our tasks rolling soon, so that will be handy 
+# idk this seems off, i didn't read the docs im sorry
 CELERY_BEAT_SCHEDULE = {
-    'send-summary-every-hour': {
-        'task': 'summary',
-        # There are 4 ways we can handle time, read further 
-        'schedule': 3600.0,
-    },
-    # Executes every Friday at 4pm
-    'send-notification-on-friday-afternoon': { 
-        'task': 'display.tasks.send_email_task', 
-        'schedule': 20.0,
+    'refresh-feeds-every-15-mins': { 
+        'task': 'display.tasks.refreshWatchlistBackground', 
+        'schedule': 60.0,
     }
 }
 

@@ -6,8 +6,12 @@ from django.core.mail import send_mail
 from .controllers.helper import refreshFeeds, refreshWatchlist
 
 @shared_task 
-def send_notifiction():
+def refreshFeedsBackground():
     print('Here I am')
+
+@shared_task 
+def refreshWatchlistBackground():
+    refreshWatchlist()
 
 @shared_task
 def send_email_task():
