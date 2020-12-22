@@ -116,7 +116,6 @@ def divide_chunks(l, n):
 # look for new videos of all channel from the XML feed
 @display.controllers.debug_helper.st_time
 def updateRecentFeeds(request):
-    channels = Channel.objects.all()
 
     fetched = fetchXML()
     newlyCrawledVideoIdList = []

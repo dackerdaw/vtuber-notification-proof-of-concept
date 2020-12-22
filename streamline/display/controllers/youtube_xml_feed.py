@@ -52,7 +52,7 @@ async def fetchXMLAsync():
             for channel in channels
         ]
 
-        stage = await pl.task.map(fetch, urls, workers=10) # 5 workers seems to be the safest
+        stage = await pl.task.map(fetch, urls, workers=5) # 5 workers seems to be the safest
         data = list(stage)
 
         return data
