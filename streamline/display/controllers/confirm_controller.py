@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.db.models import Q
 # from asgiref.sync import sync_to_async
 
 # import requests, asyncio, time
@@ -12,7 +11,7 @@ from display.models.video import Video
 
 from .youtube_xml_feed import fetchChannelXML, fetchXML
 from .youtube_api_calls import fetchChannelAPI, fetchPlaylistItemsAPI, fetchVideosAPI
-from .helper import refreshFeeds, divide_chunks
+from .helper import refreshFeeds, divide_chunks, refreshWatchlist
 import display.controllers.debug_helper
 
 @display.controllers.debug_helper.st_time
@@ -126,56 +125,11 @@ def updateRecentFeeds(request):
 # live stream has started or otherwise, ongoing live stream has ended
 @display.controllers.debug_helper.st_time
 def updateWatchlist(request):
-    watchlist = Video.objects.filter(Q(liveBroadcastContent='live') | Q(liveBroadcastContent='upcoming'))
-    # in most cases, if you run this with enough interval, it shouldn't exceeds 50 videos. but just in case
-    watchlistedVideoIdList = [video.videoId for video in watchlist]
-    dividedChunks = list(divide_chunks(watchlistedVideoIdList, 50))
 
-    for chunk in dividedChunks:
-        videoIdString = ",".join(watchlistedVideoIdList)
+    watchlistedVideoIdList = refreshWatchlist()
 
-        # what would happen if the video is unarchived or privated, who knows, too bad
-        items = fetchVideosAPI(videoIdString)
-
-        for item in items:
-            currVideoId = item['id']
-            currTitle = item['snippet']['title']
-            currThumbnail = item['snippet']['thumbnails']['medium']['url']
-            currPublishedAt = item['snippet']['publishedAt']
-            currLiveBroadcastContent = item['snippet']['liveBroadcastContent']
-            try:
-                currScheduledStartTime = item['liveStreamingDetails']['scheduledStartTime']
-            except:
-                currScheduledStartTime = None
-
-            try:
-                currActualStartTime = item['liveStreamingDetails']['actualStartTime']
-            except:
-                currActualStartTime = None
-
-            try:
-                currActualEndTime = item['liveStreamingDetails']['actualEndTime']
-            except:
-                currActualEndTime = None
-
-            currVideo = Video.objects.get(pk=currVideoId)
-            currVideo.title = currTitle
-            currVideo.thumbnail = currThumbnail
-            currVideo.publishedAt = currPublishedAt
-            currVideo.liveBroadcastContent = currLiveBroadcastContent
-            currVideo.scheduledStartTime = currScheduledStartTime
-            currVideo.actualStartTime = currActualStartTime
-            currVideo.actualEndTime = currActualEndTime
-
-            try:
-                currVideo.save()
-            except Exception as e:
-                print(e)
-                return HttpResponseRedirect(reverse('channel-index'))
-
-
-    if len(watchlistedVideoIdList) > 0:
-        messages.info(request, 'Watchlish updated. %d video(s) updated. %d YouTube API quota spent' % (len(watchlistedVideoIdList), display.controllers.debug_helper.API_CALLS_MADE))
+    if watchlistedVideoIdList > 0:
+        messages.info(request, 'Watchlish updated. %d video(s) updated. %d YouTube API quota spent' % (watchlistedVideoIdList, display.controllers.debug_helper.API_CALLS_MADE))
         # don't forget to implement the message in the template
     else:
         messages.info(request, 'No changes were made.')
