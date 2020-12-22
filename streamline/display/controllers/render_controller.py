@@ -11,8 +11,10 @@ from display.forms.find_channel_form import findChannelForm
 import display.controllers.debug_helper
 
 from .youtube_xml_feed import fetchChannelXML
+from display.tasks import send_email_task
 
 def index(request):
+    send_email_task.delay()
     upcomingVideos = Video.objects.filter(liveBroadcastContent='upcoming')
     liveVideos = Video.objects.filter(liveBroadcastContent='live')
 

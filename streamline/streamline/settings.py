@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_celery_beat',
+
     'display.apps.DisplayConfig',
 ]
 
@@ -145,3 +147,33 @@ STATICFILES_DIRS = [
 # no idea, should i be worried? perhaps, do i know any other solution?
 # too bad
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+# CELERY STUFF
+from celery.schedules import crontab 
+CELERY_BROKER_URL = 'redis://localhost:6379'
+# BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Jakarta'
+# We're going to have our tasks rolling soon, so that will be handy 
+CELERY_BEAT_SCHEDULE = {
+    'send-summary-every-hour': {
+        'task': 'summary',
+        # There are 4 ways we can handle time, read further 
+        'schedule': 3600.0,
+    },
+    # Executes every Friday at 4pm
+    'send-notification-on-friday-afternoon': { 
+        'task': 'display.tasks.send_email_task', 
+        'schedule': 20.0,
+    }
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ibrahim.qardhawi@student.president.ac.id'
+EMAIL_HOST_PASSWORD = 'waterSEVEN77'
