@@ -1,5 +1,5 @@
 from django.urls import path
-from .controllers import render_controller, confirm_controller, background_view
+from .controllers import render_controller, confirm_controller
 
 urlpatterns = [
     path('', render_controller.index, name='index'),
@@ -8,8 +8,6 @@ urlpatterns = [
     path('channel/save/<str:channelId>/', confirm_controller.confirmSaveChannel, name='confirm-save-channel'),
     path('channel/update/feeds/<str:channelId>/', confirm_controller.updateRecentFeedsChannel, name='update-recent-feeds-channel'),
     path('channel/update/watchlist/<str:channelId>/', confirm_controller.updateWatchlistChannel, name='update-watchlist-channel'),
-    path('update/feeds/', confirm_controller.updateRecentFeedsAllAsync, name='update-recent-feeds-all'),
+    path('update/feeds/', confirm_controller.updateRecentFeedsAll, name='update-recent-feeds-all'),
     path('update/watchlist/', confirm_controller.updateWatchlistAll, name='update-watchlist-all'),
-
-    path('background_view/', background_view.utama, name='background-view'),
 ]

@@ -1,6 +1,5 @@
 from aiohttp import ClientSession, TCPConnector
 import asyncio
-import sys
 import pypeln as pl
 import xml.etree.ElementTree as ET
 import time
@@ -9,16 +8,13 @@ from asgiref.sync import sync_to_async
 from display.models.channel import Channel
 from display.models.video import Video
 
-def get_url(filename):
-    with open(filename) as file:
-        urls = [line.rstrip('\n') for line in file]
-        return urls
+from django.core.exceptions import ObjectDoesNotExist
 
 async def main():
 
     async with ClientSession(connector=TCPConnector(limit=0)) as session:
 
-        async def fetch(url):
+        async def fetch(url): # if only i knew how to use pub/sub, too bad
             async with session.get(url) as response:
                 chunk = await response.read()
                 tree = ET.ElementTree(ET.fromstring(chunk))
@@ -28,7 +24,13 @@ async def main():
 
                 for entry in tree.iter(ns + 'entry'):
                     currVideoId = entry[1].text
-                    uncrawledVideoIds.append(currVideoId)
+                    try:
+                        results = await sync_to_async(Video.objects.get, thread_sensitive=True)(pk=currVideoId)
+                        # print('video found in db')
+                    except ObjectDoesNotExist:
+                        # fetch the video metadata with youtube api
+                        # print('uncrawled video found: ' + currVideoId)
+                        uncrawledVideoIds.append(currVideoId)
                 return uncrawledVideoIds
 
         channels = await sync_to_async(Channel.objects.all)()
@@ -42,11 +44,17 @@ async def main():
 
         return data
 
-from django.http import HttpResponse
-def utama(request):
+'''
+fetch the xml file from each channel's YouTube RSS feeds asynchronously.
+return a list of videoId of new videos (doesn't make an API call)
+'''
+def utama():
     start_time = time.time()
-    data = asyncio.run(main())
-    print(len(data)) # should return 72 items
-    print(len(data[0])) # should return 15 items, unless it's a really new channel
+
+    results = asyncio.run(main())
+    videoIdList = []
+    for channel in results:
+        videoIdList.extend(channel)
+
     end_time = time.time() - start_time
-    return HttpResponse(end_time)
+    return videoIdList

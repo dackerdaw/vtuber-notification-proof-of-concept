@@ -10,7 +10,7 @@ import requests, asyncio, time
 from display.models.channel import Channel
 from display.models.video import Video
 
-from .youtube_xml_feed import fetchChannelXML, fetchRecentFeedsXML, fetchRecentFeedsXMLAsync
+from .youtube_xml_feed import fetchChannelXML, fetchRecentFeedsXML, fetchXML
 from .youtube_api_calls import fetchChannelAPI, fetchPlaylistItemsAPI, fetchVideosAPI
 import display.controllers.debug_helper
 
@@ -250,10 +250,11 @@ def divide_chunks(l, n):
 @display.controllers.debug_helper.st_time
 def updateRecentFeedsAll(request):
     channels = Channel.objects.all()
-    newlyCrawledVideoIdList = []
 
-    for channel in channels:
-        newlyCrawledVideoIdList.extend(fetchRecentFeedsXML(channel.channelId))
+    fetched = asyncio.run(fetchXML())
+    newlyCrawledVideoIdList = []
+    for item in fetched:
+        newlyCrawledVideoIdList.extend(item)
     
     # YouTube API videos.list() allows up to 50 videoIds per call.
     # since we crawl all channels periodically, it shouldn't exceeds 50.
