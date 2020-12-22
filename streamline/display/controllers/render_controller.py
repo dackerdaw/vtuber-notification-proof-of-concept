@@ -13,7 +13,6 @@ import display.controllers.debug_helper
 from .youtube_xml_feed import fetchChannelXML
 
 def index(request):
-
     upcomingVideos = Video.objects.filter(liveBroadcastContent='upcoming')
     liveVideos = Video.objects.filter(liveBroadcastContent='live')
 

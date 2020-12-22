@@ -1,5 +1,5 @@
 from django.urls import path
-from .controllers import render_controller, confirm_controller, jajal
+from .controllers import render_controller, confirm_controller, background_view
 
 urlpatterns = [
     path('', render_controller.index, name='index'),
@@ -11,5 +11,5 @@ urlpatterns = [
     path('update/feeds/', confirm_controller.updateRecentFeedsAllAsync, name='update-recent-feeds-all'),
     path('update/watchlist/', confirm_controller.updateWatchlistAll, name='update-watchlist-all'),
 
-    path('jajal/', jajal.utama, name='jajal'),
+    path('background_view/', background_view.utama, name='background-view'),
 ]

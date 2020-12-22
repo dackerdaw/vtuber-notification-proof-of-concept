@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'background_task',
+
     'display.apps.DisplayConfig',
 ]
 
