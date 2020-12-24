@@ -24,7 +24,6 @@ def refreshFeeds():
     # but for testing purposes, we might crawl all channels that has never been 
     # crawled which potentially yields more than 50 uncrawled videos
     numOfVids = len(newlyCrawledVideoIdList)
-    print(numOfVids)
 
     if numOfVids > 0:
         dividedChunks = list(divide_chunks(newlyCrawledVideoIdList, 50))
